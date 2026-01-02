@@ -20,13 +20,13 @@ The goal is to make the developer better at web development, not to do the work 
 - Self-taught web developer
 - Has data science background (bootcamp + work experience)
 - Wants to learn web dev with AI guidance, not AI solutions
-- Learning vim motions alongside development
 
 ---
 
 ## Project Context
 
 ### Business
+
 - Middleman business buying **Rubber** (latex, sheet, cup) and **Palm** from farmers
 - Selling to factories
 - Replacing paper + Excel workflow with a POS web app
@@ -34,6 +34,7 @@ The goal is to make the developer better at web development, not to do the work 
 - Environment: Local network on Synology NAS
 
 ### Tech Stack
+
 - **Framework:** TanStack Start (monorepo)
 - **Backend:** Elysia
 - **Database:** Drizzle ORM
@@ -47,96 +48,122 @@ The goal is to make the developer better at web development, not to do the work 
 ## Data Model
 
 ### farmer
-| Column | Type | Notes |
-|--------|------|-------|
-| id | uuid | Primary key |
-| display_name | string | Format: "โกตี๋-นาสาร" to differentiate same names |
+
+| Column       | Type     | Notes                                             |
+| ------------ | -------- | ------------------------------------------------- |
+| id           | uuid     | Primary key                                       |
+| display_name | string   | Format: "โกตี๋-นาสาร" to differentiate same names |
+| phone        | string   | Optional — contact number                         |
+| created_at   | datetime | When record was created                           |
+| updated_at   | datetime | When record was last updated                      |
 
 ### employee
-| Column | Type | Notes |
-|--------|------|-------|
-| id | uuid | Primary key |
-| farmer_id | uuid | Foreign key → farmer |
-| display_name | string | "own" for farmer's self-employee |
+
+| Column       | Type     | Notes                                  |
+| ------------ | -------- | -------------------------------------- |
+| id           | uuid     | Primary key                            |
+| farmer_id    | uuid     | Foreign key → farmer                   |
+| display_name | string   | "own" for farmer's self-employee       |
+| address      | string   | Optional — where their farm is located |
+| phone        | string   | Optional — contact number              |
+| created_at   | datetime | When record was created                |
+| updated_at   | datetime | When record was last updated           |
 
 **Note:** When farmer is created, automatically create "own" employee for cases when farmer sells their own goods (100/0 split).
 
 ### product
-| Column | Type | Notes |
-|--------|------|-------|
-| id | uuid | Primary key |
-| name | string | ยางแผ่น, น้ำยาง, ยางถ้วย, ปาล์ม |
-| default_split_type | string | "percentage" or "per_kg" |
+
+| Column             | Type     | Notes                           |
+| ------------------ | -------- | ------------------------------- |
+| id                 | uuid     | Primary key                     |
+| name               | string   | ยางแผ่น, น้ำยาง, ยางถ้วย, ปาล์ม |
+| default_split_type | string   | "percentage" or "per_kg"        |
+| created_at         | datetime | When record was created         |
+| updated_at         | datetime | When record was last updated    |
 
 ### product_price
-| Column | Type | Notes |
-|--------|------|-------|
-| id | uuid | Primary key |
-| product_id | uuid | Foreign key → product |
-| price | decimal | Price per kg |
-| datetime | datetime | When price was set |
+
+| Column     | Type     | Notes                   |
+| ---------- | -------- | ----------------------- |
+| id         | uuid     | Primary key             |
+| product_id | uuid     | Foreign key → product   |
+| price      | decimal  | Price per kg            |
+| datetime   | datetime | When price was set      |
+| created_at | datetime | When record was created |
 
 **Note:** Query latest price by product_id ORDER BY datetime DESC LIMIT 1. If no price set today, use most recent.
 
 ### split_defaults
-| Column | Type | Notes |
-|--------|------|-------|
-| id | uuid | Primary key |
-| employee_id | uuid | Foreign key → employee |
-| product_id | uuid | Foreign key → product |
-| split_type | string | "percentage" or "per_kg" |
-| farmer_split_ratio | decimal | null if per_kg |
-| employee_split_ratio | decimal | null if per_kg |
-| harvest_rate | decimal | null if percentage (baht per kg for Palm) |
-| transportation_fee | decimal | null if not used (ratio of weight for Rubber) |
+
+| Column               | Type     | Notes                                         |
+| -------------------- | -------- | --------------------------------------------- |
+| id                   | uuid     | Primary key                                   |
+| employee_id          | uuid     | Foreign key → employee                        |
+| product_id           | uuid     | Foreign key → product                         |
+| split_type           | string   | "percentage" or "per_kg"                      |
+| farmer_split_ratio   | decimal  | null if per_kg                                |
+| employee_split_ratio | decimal  | null if per_kg                                |
+| harvest_rate         | decimal  | null if percentage (baht per kg for Palm)     |
+| transportation_fee   | decimal  | null if not used (ratio of weight for Rubber) |
+| created_at           | datetime | When record was created                       |
+| updated_at           | datetime | When record was last updated                  |
 
 **Note:** Defaults are saved on first transaction for each employee-product combination. Editable in employee settings screen.
 
 ### transaction_group
-| Column | Type | Notes |
-|--------|------|-------|
-| id | uuid | Primary key |
-| farmer_id | uuid | Foreign key → farmer |
-| datetime | datetime | When created |
-| note | string | Optional — "สวน A", "ล็อต 2" |
-| status | string | "pending" or "submitted" |
 
-**Note:** Always create a group, even for single transaction line. "submitted" means paid.
+| Column      | Type     | Notes                                      |
+| ----------- | -------- | ------------------------------------------ |
+| id          | uuid     | Primary key                                |
+| farmer_id   | uuid     | Foreign key → farmer                       |
+| datetime    | datetime | When created                               |
+| group_name  | string   | Optional — "สวน A", "ล็อต 2"               |
+| status      | string   | "pending" or "submitted"                   |
+| print_count | integer  | Default 0 — how many times invoice printed |
+| created_at  | datetime | When record was created                    |
+| updated_at  | datetime | When record was last updated               |
+
+**Note:** Always create a group, even for single transaction line. "submitted" means paid. `print_count` tracks if invoice has been printed.
 
 ### transaction_line
-| Column | Type | Notes |
-|--------|------|-------|
-| id | uuid | Primary key |
-| group_id | uuid | Foreign key → transaction_group |
-| employee_id | uuid | Foreign key → employee |
-| product_id | uuid | Foreign key → product |
-| weight | decimal | kg |
-| price | decimal | Locked at time of sale |
-| split_type | string | "percentage" or "per_kg" |
-| farmer_ratio | decimal | null if per_kg |
-| employee_ratio | decimal | null if per_kg |
-| harvest_rate | decimal | null if percentage |
-| transportation_fee | decimal | null if not used |
-| car_license | string | null for Rubber, used for Palm |
-| promotion | decimal | null if not used (baht per kg) |
-| promotion_to | string | null, "farmer", or "harvester" |
+
+| Column             | Type     | Notes                           |
+| ------------------ | -------- | ------------------------------- |
+| id                 | uuid     | Primary key                     |
+| group_id           | uuid     | Foreign key → transaction_group |
+| employee_id        | uuid     | Foreign key → employee          |
+| product_id         | uuid     | Foreign key → product           |
+| weight             | decimal  | kg                              |
+| price              | decimal  | Locked at time of sale          |
+| split_type         | string   | "percentage" or "per_kg"        |
+| farmer_ratio       | decimal  | null if per_kg                  |
+| employee_ratio     | decimal  | null if per_kg                  |
+| harvest_rate       | decimal  | null if percentage              |
+| transportation_fee | decimal  | null if not used                |
+| car_license        | string   | null for Rubber, used for Palm  |
+| promotion          | decimal  | null if not used (baht per kg)  |
+| created_at         | datetime | When record was created         |
+| updated_at         | datetime | When record was last updated    |
 
 ---
 
 ## Key Business Rules
 
 ### 1. Farmer-Employee Relationship
+
 - Employees belong to farmers
 - Split ratios are per employee-product combination
 - If employee works with multiple farmers (rare), create separate employee records
 
 ### 2. Farmer Sells Own Goods
+
 - Auto-create "own" employee when farmer is created
 - UI checkbox "แบ่งกับลูกจ้าง" — unchecked uses "own" employee
 - Split is 100/0 (farmer gets all)
 - Hide split UI section when unchecked
 
 ### 3. Same-Name Farmers
+
 - Use display_name format: "โกตี๋-นาสาร", "โกตี๋-เจ๊น้อย"
 - Identifier comes from chitchat (location, nickname, association)
 - Single field, not separate name + identifier
@@ -144,6 +171,7 @@ The goal is to make the developer better at web development, not to do the work 
 ### 4. Split Types
 
 **Percentage (Rubber):**
+
 ```
 Total = weight × price
 Farmer gets = Total × farmer_ratio
@@ -151,6 +179,7 @@ Employee gets = Total × employee_ratio
 ```
 
 **Per kg (Palm):**
+
 ```
 Total = weight × price
 Harvester gets = weight × harvest_rate
@@ -158,51 +187,61 @@ Farmer gets = Total - Harvester amount
 ```
 
 ### 5. Transportation Fee (Rubber only, rare)
+
 - Stored as ratio of weight (e.g., 50%)
 - Deducted from employee portion
 - Added to farmer portion
 - Usually null (edge case)
 
 ### 6. Promotion (Palm only)
+
 - Extra amount per kg
 - Goes to either farmer OR harvester (not split)
 - Separate receipt
 
 ### 7. Price Management
+
 - Set daily per product
 - Transaction locks in price at time of sale
 - If not set today, use latest price
 - Price history kept for reference
 
 ### 8. Transaction Groups
+
 - Always create a group, even for single line
 - Group = one farmer visit
 - Can add note for labeling ("สวน A", "ล็อต 2")
 - Same farmer can have multiple groups (different farms)
 
 ### 9. Transaction Status
+
 - **pending:** Not yet paid, can edit freely
 - **submitted:** Paid, can still edit (no history tracking)
 - Simple edit allowed — trust-based family system
 
 ### 10. Split Defaults
+
 - Saved on first transaction for each employee-product
 - Auto-fill on subsequent transactions
 - Editable in employee settings screen
 - Can override per transaction without changing default
 
 ### 11. Inline Creation
+
 - Create farmer during transaction → auto-creates "own" employee
 - Create employee during transaction → no defaults yet, enter manually
 - First transaction saves as new default
 
 ### 12. Calculated Values
+
 **Do NOT store:**
+
 - Total amount
 - Farmer split amount
 - Employee split amount
 
 **Calculate from:**
+
 - weight, price, ratios, harvest_rate, transportation_fee, promotion
 
 ---
@@ -210,7 +249,9 @@ Farmer gets = Total - Harvester amount
 ## UI Screens (v1)
 
 ### 1. Transaction Screen (Core)
+
 **Flow:**
+
 1. Select farmer (or add new inline)
 2. Enter note (optional)
 3. Checkbox: "แบ่งกับลูกจ้าง/คนตัด"
@@ -228,22 +269,26 @@ Farmer gets = Total - Harvester amount
 13. Submit when paid
 
 **Invoice types:**
+
 - Farmer invoice: all lines, all employees, summary breakdown
 - Employee invoice: only their lines, hides farmer portion
 
 ### 2. Pending Transactions Screen
+
 - List of groups with status "pending"
 - Shows: farmer name, line count, note, total amount
 - Click to edit/view
 - Can submit (mark as paid)
 
 ### 3. Set Prices Screen
+
 - List all products
 - Show current price
 - Input new price
 - Save creates new product_price record
 
 ### 4. Employee Settings Screen
+
 - List employees grouped by farmer
 - Show split defaults per product
 - Edit defaults
@@ -269,6 +314,7 @@ product (1) ──→ (many) transaction_line
 ## Build Plan
 
 ### Phase 1: Farmer + Employee
+
 - [ ] Create farmer table schema (Drizzle)
 - [ ] Create employee table schema (Drizzle)
 - [ ] API: create farmer (auto-create "own" employee)
@@ -280,6 +326,7 @@ product (1) ──→ (many) transaction_line
 - [ ] Test: create farmer → verify "own" employee created
 
 ### Phase 2: Product + Product Price
+
 - [ ] Create product table schema
 - [ ] Create product_price table schema
 - [ ] Seed initial products (ยางแผ่น, น้ำยาง, ยางถ้วย, ปาล์ม)
@@ -290,6 +337,7 @@ product (1) ──→ (many) transaction_line
 - [ ] Test: set price → verify latest price returned
 
 ### Phase 3: Split Defaults
+
 - [ ] Create split_defaults table schema
 - [ ] API: get defaults for employee-product
 - [ ] API: create/update defaults
@@ -297,6 +345,7 @@ product (1) ──→ (many) transaction_line
 - [ ] Test: create default → verify auto-fill works
 
 ### Phase 4: Transaction Group + Line
+
 - [ ] Create transaction_group table schema
 - [ ] Create transaction_line table schema
 - [ ] API: create group
@@ -313,12 +362,14 @@ product (1) ──→ (many) transaction_line
 - [ ] Test: full transaction flow
 
 ### Phase 5: Invoice
+
 - [ ] UI: invoice preview modal
 - [ ] UI: farmer invoice view
 - [ ] UI: employee invoice view
 - [ ] Print functionality
 
 ### Future (v2)
+
 - Factory sales table
 - Shipment tracking
 - Weight at delivery reconciliation
@@ -338,12 +389,14 @@ When the developer asks for help:
 5. **Encourage documentation** — write down decisions and why
 
 ### Never Do:
+
 - Write code directly
 - Provide copy-paste solutions
 - Skip explanation to give answers
 - Make decisions for them
 
 ### Instead Do:
+
 - Ask: "What do you think the function signature should look like?"
 - Ask: "How would you handle the error case?"
 - Ask: "What happens when the user does X?"
@@ -369,31 +422,41 @@ When the developer asks for help:
 ## Common Patterns in This Project
 
 ### Creating Records with Auto-Relations
+
 When creating farmer → also create "own" employee
+
 ```
 Think about: transaction, error handling, rollback
 ```
 
 ### Getting Latest Price
+
 Query product_price by product_id, order by datetime desc, limit 1
+
 ```
 Think about: what if no price exists? default? error?
 ```
 
 ### Conditional UI Based on Checkbox
+
 Split checkbox controls: employee dropdown visibility, split fields visibility
+
 ```
 Think about: form state, validation when hidden, default values
 ```
 
 ### Calculated Display Values
+
 Total, split amounts shown but not stored
+
 ```
 Think about: where to calculate (frontend vs API), rounding, consistency
 ```
 
 ### Inline Entity Creation
+
 Create farmer/employee without leaving transaction screen
+
 ```
 Think about: form state management, optimistic updates, error recovery
 ```
@@ -402,22 +465,22 @@ Think about: form state management, optimistic updates, error recovery
 
 ## Glossary (Thai-English)
 
-| Thai | English | Context |
-|------|---------|---------|
-| เจ้าของ/เจ้าของสวน | Farmer/Owner | Person who owns the farm |
-| ลูกจ้าง | Employee | Works for farmer (Rubber) |
-| คนตัด | Harvester | Works for farmer (Palm) |
-| ยางแผ่น | Rubber Sheet | Product type |
-| น้ำยาง | Latex | Product type |
-| ยางถ้วย | Cup Rubber | Product type |
-| ปาล์ม | Palm | Product type |
-| ค่าขนส่ง | Transportation Fee | Deducted from employee |
-| ค่าตัด | Harvest Rate | Per kg payment to harvester |
-| โปรโมชั่น | Promotion | Extra per kg (Palm) |
-| ทะเบียนรถ | Car License | Vehicle plate number |
-| รอจ่าย | Pending | Not yet paid |
-| จ่ายแล้ว | Submitted/Paid | Payment complete |
-| ใบเสร็จ | Invoice/Receipt | Printed record |
+| Thai               | English            | Context                     |
+| ------------------ | ------------------ | --------------------------- |
+| เจ้าของ/เจ้าของสวน | Farmer/Owner       | Person who owns the farm    |
+| ลูกจ้าง            | Employee           | Works for farmer (Rubber)   |
+| คนตัด              | Harvester          | Works for farmer (Palm)     |
+| ยางแผ่น            | Rubber Sheet       | Product type                |
+| น้ำยาง             | Latex              | Product type                |
+| ยางถ้วย            | Cup Rubber         | Product type                |
+| ปาล์ม              | Palm               | Product type                |
+| ค่าขนส่ง           | Transportation Fee | Deducted from employee      |
+| ค่าตัด             | Harvest Rate       | Per kg payment to harvester |
+| โปรโมชั่น          | Promotion          | Extra per kg (Palm)         |
+| ทะเบียนรถ          | Car License        | Vehicle plate number        |
+| รอจ่าย             | Pending            | Not yet paid                |
+| จ่ายแล้ว           | Submitted/Paid     | Payment complete            |
+| ใบเสร็จ            | Invoice/Receipt    | Printed record              |
 
 ---
 
@@ -472,8 +535,8 @@ When stuck, consider looking into:
 
 ## Remember
 
-The developer wants to **learn**, not just **ship**. 
+The developer wants to **learn**, not just **ship**.
 
-Every question is an opportunity to deepen understanding. 
+Every question is an opportunity to deepen understanding.
 
 Guide them to discover answers, don't hand them solutions.
