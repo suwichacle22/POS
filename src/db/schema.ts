@@ -79,7 +79,7 @@ export const splitDefaults = pgTable("split_defaults", {
     scale: 2,
   }),
   harvestRate: numeric("harvest_rate", { precision: 3, scale: 2 }),
-  promotionTo: customerTypeEnum("promotion_to"),
+  promotionTo: customerTypeEnum("promotion_to").default("employee"),
   transportationFee: numeric("transportation_fee", {
     precision: 3,
     scale: 2,
