@@ -10,6 +10,9 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as ProductProductRouteImport } from './routes/product/product'
+import { Route as ProductAdd_productRouteImport } from './routes/product/add_product'
+import { Route as ProductAdd_price_productRouteImport } from './routes/product/add_price_product'
 import { Route as ApiSplatRouteImport } from './routes/api.$'
 
 const IndexRoute = IndexRouteImport.update({
@@ -17,6 +20,22 @@ const IndexRoute = IndexRouteImport.update({
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ProductProductRoute = ProductProductRouteImport.update({
+  id: '/product/product',
+  path: '/product/product',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ProductAdd_productRoute = ProductAdd_productRouteImport.update({
+  id: '/product/add_product',
+  path: '/product/add_product',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ProductAdd_price_productRoute =
+  ProductAdd_price_productRouteImport.update({
+    id: '/product/add_price_product',
+    path: '/product/add_price_product',
+    getParentRoute: () => rootRouteImport,
+  } as any)
 const ApiSplatRoute = ApiSplatRouteImport.update({
   id: '/api/$',
   path: '/api/$',
@@ -26,27 +45,55 @@ const ApiSplatRoute = ApiSplatRouteImport.update({
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/api/$': typeof ApiSplatRoute
+  '/product/add_price_product': typeof ProductAdd_price_productRoute
+  '/product/add_product': typeof ProductAdd_productRoute
+  '/product/product': typeof ProductProductRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/api/$': typeof ApiSplatRoute
+  '/product/add_price_product': typeof ProductAdd_price_productRoute
+  '/product/add_product': typeof ProductAdd_productRoute
+  '/product/product': typeof ProductProductRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/api/$': typeof ApiSplatRoute
+  '/product/add_price_product': typeof ProductAdd_price_productRoute
+  '/product/add_product': typeof ProductAdd_productRoute
+  '/product/product': typeof ProductProductRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/api/$'
+  fullPaths:
+    | '/'
+    | '/api/$'
+    | '/product/add_price_product'
+    | '/product/add_product'
+    | '/product/product'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/api/$'
-  id: '__root__' | '/' | '/api/$'
+  to:
+    | '/'
+    | '/api/$'
+    | '/product/add_price_product'
+    | '/product/add_product'
+    | '/product/product'
+  id:
+    | '__root__'
+    | '/'
+    | '/api/$'
+    | '/product/add_price_product'
+    | '/product/add_product'
+    | '/product/product'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   ApiSplatRoute: typeof ApiSplatRoute
+  ProductAdd_price_productRoute: typeof ProductAdd_price_productRoute
+  ProductAdd_productRoute: typeof ProductAdd_productRoute
+  ProductProductRoute: typeof ProductProductRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -56,6 +103,27 @@ declare module '@tanstack/react-router' {
       path: '/'
       fullPath: '/'
       preLoaderRoute: typeof IndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/product/product': {
+      id: '/product/product'
+      path: '/product/product'
+      fullPath: '/product/product'
+      preLoaderRoute: typeof ProductProductRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/product/add_product': {
+      id: '/product/add_product'
+      path: '/product/add_product'
+      fullPath: '/product/add_product'
+      preLoaderRoute: typeof ProductAdd_productRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/product/add_price_product': {
+      id: '/product/add_price_product'
+      path: '/product/add_price_product'
+      fullPath: '/product/add_price_product'
+      preLoaderRoute: typeof ProductAdd_price_productRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/api/$': {
@@ -71,6 +139,9 @@ declare module '@tanstack/react-router' {
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   ApiSplatRoute: ApiSplatRoute,
+  ProductAdd_price_productRoute: ProductAdd_price_productRoute,
+  ProductAdd_productRoute: ProductAdd_productRoute,
+  ProductProductRoute: ProductProductRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

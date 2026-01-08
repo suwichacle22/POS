@@ -20,7 +20,7 @@ export const productSplitTypeEnum = pgEnum("product_split_type_enum", [
 
 export const farmers = pgTable("farmers", {
   farmerId: uuid("farmer_id").primaryKey().defaultRandom(),
-  displayName: text("display_name").notNull(),
+  displayName: text("display_name").notNull().unique(),
   phone: text("phone"),
   createdAt: timestamp("created_at").defaultNow(),
   updatedAt: timestamp("updated_at")

@@ -1,0 +1,90 @@
+erDiagram
+    farmers ||--o{ employees : "has"
+    farmers ||--o{ transactionGroups : "has"
+    
+    employees ||--o{ splitDefaults : "has"
+    employees ||--o{ transactionLines : "works on"
+    
+    products ||--o{ productPrices : "has price history"
+    products ||--o{ splitDefaults : "has defaults for"
+    products ||--o{ transactionLines : "sold in"
+    
+    transactionGroups ||--o{ transactionLines : "contains"
+
+    farmers {
+        uuid farmer_id PK
+        text display_name UK
+        text phone
+        timestamp created_at
+        timestamp updated_at
+    }
+
+    employees {
+        uuid employee_id PK
+        uuid farmer_id FK
+        text display_name
+        text address
+        text phone
+        timestamp created_at
+        timestamp updated_at
+    }
+
+    products {
+        uuid product_id PK
+        text product_name
+        enum default_split_type
+        timestamp created_at
+        timestamp updated_at
+    }
+
+    productPrices {
+        uuid product_price_id PK
+        uuid product_id FK
+        numeric price
+        timestamp created_at
+    }
+
+    splitDefaults {
+        uuid split_default_id PK
+        uuid employee_id FK
+        uuid product_id FK
+        enum split_type
+        numeric farmer_split_ratio
+        numeric employee_split_ratio
+        numeric harvest_rate
+        enum promotion_to
+        numeric transportation_fee
+        timestamp created_at
+        timestamp updated_at
+    }
+
+    transactionGroups {
+        uuid transaction_group_id PK
+        uuid farmer_id FK
+        text group_name
+        enum status
+        integer print_count
+        timestamp created_at
+        timestamp submitted_at
+        timestamp updated_at
+    }
+
+    transactionLines {
+        uuid transaction_id PK
+        uuid transaction_group_id FK
+        uuid employee_id FK
+        uuid product_id FK
+        numeric weight
+        numeric price
+        enum split_type
+        numeric farmer_ratio
+        numeric employee_ratio
+        numeric harvest_rate
+        numeric transportation_fee
+        text car_license
+        numeric promotion_rate
+        enum promotion_to
+        timestamp created_at
+        timestamp submitted_at
+        timestamp updated_at
+    }
