@@ -44,7 +44,7 @@ export const employees = pgTable("employees", {
 
 export const products = pgTable("products", {
   productId: uuid("product_id").primaryKey().defaultRandom(),
-  productName: text("product_name").notNull(),
+  productName: text("product_name").notNull().unique(),
   defaultSplitType: productSplitTypeEnum("default_split_type").notNull(),
   createdAt: timestamp("created_at").defaultNow(),
   updatedAt: timestamp("updated_at")
@@ -114,6 +114,14 @@ export const transactionLines = pgTable("transaction_lines", {
     .notNull()
     .references(() => employees.employeeId),
   productId: uuid("product_id").references(() => products.productId),
+  weightVehicleIn: numeric("weight_vehicle_in", {
+    precision: 10,
+    scale: 2,
+  }),
+  weightVehicleOut: numeric("weight_vehicle_out", {
+    precision: 10,
+    scale: 2,
+  }),
   weight: numeric("weight", {
     precision: 10,
     scale: 2,

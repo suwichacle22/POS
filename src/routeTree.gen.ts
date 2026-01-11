@@ -10,7 +10,7 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
-import { Route as ProductProductRouteImport } from './routes/product/product'
+import { Route as ProductOverviewRouteImport } from './routes/product/overview'
 import { Route as ProductAdd_productRouteImport } from './routes/product/add_product'
 import { Route as ProductAdd_price_productRouteImport } from './routes/product/add_price_product'
 import { Route as ApiSplatRouteImport } from './routes/api.$'
@@ -20,9 +20,9 @@ const IndexRoute = IndexRouteImport.update({
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
-const ProductProductRoute = ProductProductRouteImport.update({
-  id: '/product/product',
-  path: '/product/product',
+const ProductOverviewRoute = ProductOverviewRouteImport.update({
+  id: '/product/overview',
+  path: '/product/overview',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ProductAdd_productRoute = ProductAdd_productRouteImport.update({
@@ -47,14 +47,14 @@ export interface FileRoutesByFullPath {
   '/api/$': typeof ApiSplatRoute
   '/product/add_price_product': typeof ProductAdd_price_productRoute
   '/product/add_product': typeof ProductAdd_productRoute
-  '/product/product': typeof ProductProductRoute
+  '/product/overview': typeof ProductOverviewRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/api/$': typeof ApiSplatRoute
   '/product/add_price_product': typeof ProductAdd_price_productRoute
   '/product/add_product': typeof ProductAdd_productRoute
-  '/product/product': typeof ProductProductRoute
+  '/product/overview': typeof ProductOverviewRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -62,7 +62,7 @@ export interface FileRoutesById {
   '/api/$': typeof ApiSplatRoute
   '/product/add_price_product': typeof ProductAdd_price_productRoute
   '/product/add_product': typeof ProductAdd_productRoute
-  '/product/product': typeof ProductProductRoute
+  '/product/overview': typeof ProductOverviewRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -71,21 +71,21 @@ export interface FileRouteTypes {
     | '/api/$'
     | '/product/add_price_product'
     | '/product/add_product'
-    | '/product/product'
+    | '/product/overview'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
     | '/api/$'
     | '/product/add_price_product'
     | '/product/add_product'
-    | '/product/product'
+    | '/product/overview'
   id:
     | '__root__'
     | '/'
     | '/api/$'
     | '/product/add_price_product'
     | '/product/add_product'
-    | '/product/product'
+    | '/product/overview'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -93,7 +93,7 @@ export interface RootRouteChildren {
   ApiSplatRoute: typeof ApiSplatRoute
   ProductAdd_price_productRoute: typeof ProductAdd_price_productRoute
   ProductAdd_productRoute: typeof ProductAdd_productRoute
-  ProductProductRoute: typeof ProductProductRoute
+  ProductOverviewRoute: typeof ProductOverviewRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -105,11 +105,11 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/product/product': {
-      id: '/product/product'
-      path: '/product/product'
-      fullPath: '/product/product'
-      preLoaderRoute: typeof ProductProductRouteImport
+    '/product/overview': {
+      id: '/product/overview'
+      path: '/product/overview'
+      fullPath: '/product/overview'
+      preLoaderRoute: typeof ProductOverviewRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/product/add_product': {
@@ -141,7 +141,7 @@ const rootRouteChildren: RootRouteChildren = {
   ApiSplatRoute: ApiSplatRoute,
   ProductAdd_price_productRoute: ProductAdd_price_productRoute,
   ProductAdd_productRoute: ProductAdd_productRoute,
-  ProductProductRoute: ProductProductRoute,
+  ProductOverviewRoute: ProductOverviewRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
