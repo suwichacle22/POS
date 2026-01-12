@@ -1,47 +1,44 @@
+import { useQuery } from "@tanstack/react-query";
 import { createFileRoute } from "@tanstack/react-router";
+import { useState } from "react";
 import AddProductForm from "@/components/products/addProductForm";
-import { Activity, useState } from "react";
-import { Button } from "@/components/ui/button";
-import { db } from "@/db";
-import { createServerFn } from "@tanstack/react-start";
 import EmptyProduct from "@/components/products/emptyProduct";
 import ProductCard from "@/components/products/productCard";
-
-const loaderProduct = createServerFn({ method: "GET" }).handler(async () =>
-  db.query.products.findMany(),
-);
+import { Button } from "@/components/ui/button";
+import { productQueryOptions } from "@/utils/product";
 
 export const Route = createFileRoute("/product/overview")({
-  component: RouteComponent,
-  loader: loaderProduct,
+	component: RouteComponent,
+	loader: async ({ context }) => {
+		await context.queryClient.ensureQueryData(productQueryOptions());
+	},
 });
 
 function RouteComponent() {
-  const productData = Route.useLoaderData() || [];
-  const [isAddProduct, setIsAddProduct] = useState<"hidden" | "visible">(
-    "hidden",
-  );
-  const handleIsAddProductClick = () => {
-    setIsAddProduct((c) => (c === "hidden" ? "visible" : "hidden"));
-  };
-  return (
-    <div className="">
-      <div className="flex flex-row justify-end p-2 w-full">
-        <Button type="button" onClick={handleIsAddProductClick}>
-          เพิ่มสินค้า
-        </Button>
-      </div>
-      <Activity mode={isAddProduct}>
-        <div className="flex justify-center">
-          <AddProductForm />
-        </div>
-      </Activity>
-      {productData.length === 0 ? <EmptyProduct /> : null}
-      <div className="grid p-6 m-6">
-        {productData.map((item) => {
-          return <ProductCard item={item} />;
-        })}
-      </div>
-    </div>
-  );
+	const { data: productData = [] } = useQuery(productQueryOptions());
+	const [isAddProduct, setIsAddProduct] = useState(false);
+	const handleIsAddProductClick = () => {
+		setIsAddProduct((c) => !c);
+	};
+
+	return (
+		<div className="">
+			<div className="flex flex-row justify-end p-2 w-full">
+				<Button type="button" onClick={handleIsAddProductClick}>
+					เพิ่มสินค้า
+				</Button>
+			</div>
+			{isAddProduct ? (
+				<div className="flex justify-center">
+					<AddProductForm handleIsAddProductClick={handleIsAddProductClick} />
+				</div>
+			) : null}
+			{productData.length === 0 ? <EmptyProduct /> : null}
+			<div className="grid grid-cols-1 justify-items-center gap-4 p-4">
+				{productData.map((item) => {
+					return <ProductCard key={item.productId} item={item} />;
+				})}
+			</div>
+		</div>
+	);
 }
