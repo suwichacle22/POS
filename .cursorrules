@@ -1,0 +1,30 @@
+  # Cursor Rules for POS Rubber Shop
+
+## Code Editing Policy
+
+**IMPORTANT: Do NOT edit files unless explicitly requested.**
+
+When the user asks questions or requests explanations:
+- ✅ Provide explanations in markdown/chat format
+- ✅ Give code examples in chat (using code blocks)
+- ✅ Show how to implement something
+- ❌ Do NOT automatically edit files
+- ❌ Do NOT make changes to the codebase
+
+Only edit files when:
+- User explicitly asks "fix this", "update this", "change this"
+- User explicitly requests code changes
+- User says "implement", "add", "create" (explicit action verbs)
+
+## Communication Style
+
+- When explaining concepts: Use markdown code blocks for examples
+- When showing solutions: Provide code snippets in chat, not file edits
+- When user asks "how do I...": Explain and show examples, don't implement
+- When user asks "can you...": Clarify if they want explanation or implementation
+
+## Previous User Preferences
+
+- User prefers to learn and understand, not just receive solutions
+- User wants explanations and examples, not direct code changes
+- User will explicitly request when they want files edited

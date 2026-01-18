@@ -1,13 +1,14 @@
 import { useQuery } from "@tanstack/react-query";
 import { createFileRoute } from "@tanstack/react-router";
 import { useState } from "react";
-import AddProductForm from "@/components/products/addProductForm";
-import EmptyProduct from "@/components/products/emptyProduct";
-import ProductCard from "@/components/products/productCard";
+import AddProductForm from "@/components/products/add-product-form";
+import EmptyProduct from "@/components/products/empty-product";
+import ProductCard from "@/components/products/product-card";
 import { Button } from "@/components/ui/button";
+import { Separator } from "@/components/ui/separator";
 import { productQueryOptions } from "@/utils/product";
 
-export const Route = createFileRoute("/product/overview")({
+export const Route = createFileRoute("/product")({
 	component: RouteComponent,
 	loader: async ({ context }) => {
 		await context.queryClient.ensureQueryData(productQueryOptions());
@@ -20,18 +21,24 @@ function RouteComponent() {
 	const handleIsAddProductClick = () => {
 		setIsAddProduct((c) => !c);
 	};
-
 	return (
 		<div className="">
 			<div className="flex flex-row justify-end p-2 w-full">
-				<Button type="button" onClick={handleIsAddProductClick}>
+				<Button
+					type="button"
+					onClick={handleIsAddProductClick}
+					variant={isAddProduct ? "destructive" : "default"}
+				>
 					เพิ่มสินค้า
 				</Button>
 			</div>
 			{isAddProduct ? (
-				<div className="flex justify-center">
-					<AddProductForm handleIsAddProductClick={handleIsAddProductClick} />
-				</div>
+				<>
+					<div className="flex justify-center">
+						<AddProductForm handleIsAddProductClick={handleIsAddProductClick} />
+					</div>
+					<Separator className="m-6" />
+				</>
 			) : null}
 			{productData.length === 0 ? <EmptyProduct /> : null}
 			<div className="grid grid-cols-1 justify-items-center gap-4 p-4">

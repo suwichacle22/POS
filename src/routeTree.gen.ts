@@ -9,95 +9,55 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as ProductRouteImport } from './routes/product'
 import { Route as IndexRouteImport } from './routes/index'
-import { Route as ProductOverviewRouteImport } from './routes/product/overview'
-import { Route as ProductAdd_productRouteImport } from './routes/product/add_product'
-import { Route as ProductAdd_price_productRouteImport } from './routes/product/add_price_product'
-import { Route as ApiSplatRouteImport } from './routes/api.$'
 
+const ProductRoute = ProductRouteImport.update({
+  id: '/product',
+  path: '/product',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
-const ProductOverviewRoute = ProductOverviewRouteImport.update({
-  id: '/product/overview',
-  path: '/product/overview',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const ProductAdd_productRoute = ProductAdd_productRouteImport.update({
-  id: '/product/add_product',
-  path: '/product/add_product',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const ProductAdd_price_productRoute =
-  ProductAdd_price_productRouteImport.update({
-    id: '/product/add_price_product',
-    path: '/product/add_price_product',
-    getParentRoute: () => rootRouteImport,
-  } as any)
-const ApiSplatRoute = ApiSplatRouteImport.update({
-  id: '/api/$',
-  path: '/api/$',
-  getParentRoute: () => rootRouteImport,
-} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
-  '/api/$': typeof ApiSplatRoute
-  '/product/add_price_product': typeof ProductAdd_price_productRoute
-  '/product/add_product': typeof ProductAdd_productRoute
-  '/product/overview': typeof ProductOverviewRoute
+  '/product': typeof ProductRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
-  '/api/$': typeof ApiSplatRoute
-  '/product/add_price_product': typeof ProductAdd_price_productRoute
-  '/product/add_product': typeof ProductAdd_productRoute
-  '/product/overview': typeof ProductOverviewRoute
+  '/product': typeof ProductRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
-  '/api/$': typeof ApiSplatRoute
-  '/product/add_price_product': typeof ProductAdd_price_productRoute
-  '/product/add_product': typeof ProductAdd_productRoute
-  '/product/overview': typeof ProductOverviewRoute
+  '/product': typeof ProductRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths:
-    | '/'
-    | '/api/$'
-    | '/product/add_price_product'
-    | '/product/add_product'
-    | '/product/overview'
+  fullPaths: '/' | '/product'
   fileRoutesByTo: FileRoutesByTo
-  to:
-    | '/'
-    | '/api/$'
-    | '/product/add_price_product'
-    | '/product/add_product'
-    | '/product/overview'
-  id:
-    | '__root__'
-    | '/'
-    | '/api/$'
-    | '/product/add_price_product'
-    | '/product/add_product'
-    | '/product/overview'
+  to: '/' | '/product'
+  id: '__root__' | '/' | '/product'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
-  ApiSplatRoute: typeof ApiSplatRoute
-  ProductAdd_price_productRoute: typeof ProductAdd_price_productRoute
-  ProductAdd_productRoute: typeof ProductAdd_productRoute
-  ProductOverviewRoute: typeof ProductOverviewRoute
+  ProductRoute: typeof ProductRoute
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/product': {
+      id: '/product'
+      path: '/product'
+      fullPath: '/product'
+      preLoaderRoute: typeof ProductRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/': {
       id: '/'
       path: '/'
@@ -105,43 +65,12 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/product/overview': {
-      id: '/product/overview'
-      path: '/product/overview'
-      fullPath: '/product/overview'
-      preLoaderRoute: typeof ProductOverviewRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/product/add_product': {
-      id: '/product/add_product'
-      path: '/product/add_product'
-      fullPath: '/product/add_product'
-      preLoaderRoute: typeof ProductAdd_productRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/product/add_price_product': {
-      id: '/product/add_price_product'
-      path: '/product/add_price_product'
-      fullPath: '/product/add_price_product'
-      preLoaderRoute: typeof ProductAdd_price_productRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/api/$': {
-      id: '/api/$'
-      path: '/api/$'
-      fullPath: '/api/$'
-      preLoaderRoute: typeof ApiSplatRouteImport
-      parentRoute: typeof rootRouteImport
-    }
   }
 }
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
-  ApiSplatRoute: ApiSplatRoute,
-  ProductAdd_price_productRoute: ProductAdd_price_productRoute,
-  ProductAdd_productRoute: ProductAdd_productRoute,
-  ProductOverviewRoute: ProductOverviewRoute,
+  ProductRoute: ProductRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
