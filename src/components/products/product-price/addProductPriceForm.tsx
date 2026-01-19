@@ -1,13 +1,9 @@
 import { useForm } from "@tanstack/react-form";
 import { useQuery } from "@tanstack/react-query";
 import { Button } from "@/components/ui/button";
-import {
-	Field,
-	FieldError,
-	FieldGroup,
-	FieldLabel,
-} from "@/components/ui/field";
+import { Field, FieldError, FieldGroup } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
+import { Spinner } from "@/components/ui/spinner";
 import {
 	fetchProductPriceById,
 	formProductPrice,
@@ -16,8 +12,10 @@ import {
 
 export default function AddProductPriceForm({
 	productId,
+	setIsAddProductPrice,
 }: {
 	productId: string;
+	setIsAddProductPrice: (isAddProductPrice: boolean) => void;
 }) {
 	const addProductPrice = useAddProductPrice(productId);
 	const { data: productPriceData } = useQuery({
@@ -45,6 +43,7 @@ export default function AddProductPriceForm({
 			onSubmit={(e) => {
 				e.preventDefault();
 				form.handleSubmit();
+				setIsAddProductPrice(false);
 			}}
 		>
 			<FieldGroup className="mt-2">
@@ -66,7 +65,9 @@ export default function AddProductPriceForm({
 								/>
 								{isInvalid && <FieldError errors={field.state.meta.errors} />}
 
-								<Button type="submit">ยืนยัน</Button>
+								<Button type="submit" disabled={addProductPrice.isPending}>
+									{addProductPrice.isPending ? <Spinner /> : null} ยืนยัน
+								</Button>
 							</Field>
 						);
 					}}

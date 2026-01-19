@@ -28,7 +28,7 @@ export const formProductPrice = z.object({
 export const fetchProduct = createServerFn({ method: "GET" }).handler(
 	async () => {
 		return await db.query.products.findMany({
-			with: { productPrices: { orderBy: { createdAt: "desc" } } },
+			with: { productPrices: { orderBy: { createdAt: "desc" }, limit: 5 } },
 		});
 	},
 );
@@ -39,7 +39,7 @@ export const fetchProductPriceById = createServerFn({ method: "GET" })
 		return await db.query.productPrices.findMany({
 			where: { productId: productId },
 			orderBy: { createdAt: "desc" },
-			limit: 7,
+			limit: 5,
 		});
 	});
 
@@ -88,7 +88,7 @@ export const useAddProductPrice = (productId: string) => {
 	return useMutation({
 		mutationFn: addProductPriceDB,
 		onSuccess: () => {
-			queryClient.invalidateQueries({ queryKey: ["product", productId] });
+			queryClient.invalidateQueries({ queryKey: ["product"] });
 		},
 	});
 };

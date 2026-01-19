@@ -10,8 +10,9 @@ import {
 } from "@/components/ui/card";
 import { transformDateThai } from "@/utils/date";
 import { Button } from "../ui/button";
-import AddProductPriceForm from "./product-price/add-product-price-form";
-import DeleteProductDialog from "./remove-product-dialog";
+import AddProductPriceForm from "./product-price/addProductPriceForm";
+import ProductPriceTable from "./product-price/productPriceTable";
+import DeleteProductDialog from "./removeProductDialog";
 
 export default function ProductCard({
 	item,
@@ -31,21 +32,37 @@ export default function ProductCard({
 	};
 }) {
 	const [isDelete, setIsDelete] = useState(false);
-	const [isAddProductPrice, setIsAddProductPrice] = useState(true); //TODO change to false when finish
+	const [isAddProductPrice, setIsAddProductPrice] = useState(false);
 	const handleDelete = () => {
 		setIsDelete(true);
 	};
+	const handleAddProductPrice = () => {
+		setIsAddProductPrice((c) => !c);
+	};
+
 	return (
 		<Card className="w-120">
 			<CardHeader>
-				<CardTitle>{item.productName}</CardTitle>
+				<CardTitle className="text-2xl font-bold">{item.productName}</CardTitle>
 				<CardDescription>{`สร้างเมื่อ ${transformDateThai(item.createdAt as Date)}`}</CardDescription>
-				<CardAction>Click ที่ Card เพื่อใส่ราคา</CardAction>
+				<CardAction>
+					<Button variant="secondary" onClick={handleAddProductPrice}>
+						{isAddProductPrice ? "กดที่นี้เพื่อปิดราคา" : "กดที่นี้เพื่อเพิ่มราคา"}
+					</Button>
+				</CardAction>
 			</CardHeader>
 			<CardContent>
-				<p>ราคาล่าสุด {item?.productPrices?.[0]?.price ?? "0.00"}</p>
+				<p className="font-bold text-xl">
+					ราคาล่าสุด {item?.productPrices?.[0]?.price ?? "0.00"}
+				</p>
 				{isAddProductPrice ? (
-					<AddProductPriceForm productId={item.productId} />
+					<AddProductPriceForm
+						productId={item.productId}
+						setIsAddProductPrice={setIsAddProductPrice}
+					/>
+				) : null}
+				{item.productPrices.length > 0 ? (
+					<ProductPriceTable productPrices={item.productPrices} />
 				) : null}
 			</CardContent>
 			<CardFooter className="flex justify-end">

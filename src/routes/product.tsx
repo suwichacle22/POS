@@ -1,9 +1,9 @@
 import { useQuery } from "@tanstack/react-query";
 import { createFileRoute } from "@tanstack/react-router";
 import { useState } from "react";
-import AddProductForm from "@/components/products/add-product-form";
-import EmptyProduct from "@/components/products/empty-product";
-import ProductCard from "@/components/products/product-card";
+import AddProductForm from "@/components/products/addProductForm";
+import EmptyProduct from "@/components/products/emptyProduct";
+import ProductCard from "@/components/products/productCard";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 import { productQueryOptions } from "@/utils/product";
