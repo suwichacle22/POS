@@ -1,22 +1,28 @@
 import { useQuery } from "@tanstack/react-query";
 import { createFileRoute } from "@tanstack/react-router";
 import { useState } from "react";
-import AddProductForm from "@/components/products/addProductForm";
-import EmptyProduct from "@/components/products/emptyProduct";
-import ProductCard from "@/components/products/productCard";
+import AddProductForm from "@/features/products/components/AddProductForm";
+import EmptyProduct from "@/features/products/components/EmptyProduct";
+import ProductCard from "@/features/products/components/ProductCard";
+import { fetchProduct } from "@/features/products/api";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
-import { productQueryOptions } from "@/utils/product";
 
 export const Route = createFileRoute("/product")({
 	component: RouteComponent,
 	loader: async ({ context }) => {
-		await context.queryClient.ensureQueryData(productQueryOptions());
+		await context.queryClient.ensureQueryData({
+			queryKey: ["product"],
+			queryFn: fetchProduct,
+		});
 	},
 });
 
 function RouteComponent() {
-	const { data: productData = [] } = useQuery(productQueryOptions());
+	const { data: productData = [] } = useQuery({
+		queryKey: ["product"],
+		queryFn: fetchProduct,
+	});
 	const [isAddProduct, setIsAddProduct] = useState(false);
 	const handleIsAddProductClick = () => {
 		setIsAddProduct((c) => !c);
@@ -35,7 +41,7 @@ function RouteComponent() {
 			{isAddProduct ? (
 				<>
 					<div className="flex justify-center">
-						<AddProductForm handleIsAddProductClick={handleIsAddProductClick} />
+						<AddProductForm handleIsAddProductClick={handleIsAddProductClick} setIsAddProduct={setIsAddProduct} />
 					</div>
 					<Separator className="m-6" />
 				</>
