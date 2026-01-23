@@ -390,10 +390,8 @@ When the developer asks for help:
 
 ### Never Do:
 
-- Write code directly
-- Provide copy-paste solutions
+- Write code directly unless developer ask for
 - Skip explanation to give answers
-- Make decisions for them
 
 ### Instead Do:
 

@@ -9,18 +9,25 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
-import { Route as TransactionRouteImport } from './routes/transaction'
-import { Route as ProductRouteImport } from './routes/product'
+import { Route as TransactionsRouteImport } from './routes/transactions'
+import { Route as ProductsRouteImport } from './routes/products'
+import { Route as FarmersRouteImport } from './routes/farmers'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as SandboxTransactionRouteImport } from './routes/sandbox/transaction'
 
-const TransactionRoute = TransactionRouteImport.update({
-  id: '/transaction',
-  path: '/transaction',
+const TransactionsRoute = TransactionsRouteImport.update({
+  id: '/transactions',
+  path: '/transactions',
   getParentRoute: () => rootRouteImport,
 } as any)
-const ProductRoute = ProductRouteImport.update({
-  id: '/product',
-  path: '/product',
+const ProductsRoute = ProductsRouteImport.update({
+  id: '/products',
+  path: '/products',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const FarmersRoute = FarmersRouteImport.update({
+  id: '/farmers',
+  path: '/farmers',
   getParentRoute: () => rootRouteImport,
 } as any)
 const IndexRoute = IndexRouteImport.update({
@@ -28,51 +35,82 @@ const IndexRoute = IndexRouteImport.update({
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const SandboxTransactionRoute = SandboxTransactionRouteImport.update({
+  id: '/sandbox/transaction',
+  path: '/sandbox/transaction',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
-  '/product': typeof ProductRoute
-  '/transaction': typeof TransactionRoute
+  '/farmers': typeof FarmersRoute
+  '/products': typeof ProductsRoute
+  '/transactions': typeof TransactionsRoute
+  '/sandbox/transaction': typeof SandboxTransactionRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
-  '/product': typeof ProductRoute
-  '/transaction': typeof TransactionRoute
+  '/farmers': typeof FarmersRoute
+  '/products': typeof ProductsRoute
+  '/transactions': typeof TransactionsRoute
+  '/sandbox/transaction': typeof SandboxTransactionRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
-  '/product': typeof ProductRoute
-  '/transaction': typeof TransactionRoute
+  '/farmers': typeof FarmersRoute
+  '/products': typeof ProductsRoute
+  '/transactions': typeof TransactionsRoute
+  '/sandbox/transaction': typeof SandboxTransactionRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/product' | '/transaction'
+  fullPaths:
+    | '/'
+    | '/farmers'
+    | '/products'
+    | '/transactions'
+    | '/sandbox/transaction'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/product' | '/transaction'
-  id: '__root__' | '/' | '/product' | '/transaction'
+  to: '/' | '/farmers' | '/products' | '/transactions' | '/sandbox/transaction'
+  id:
+    | '__root__'
+    | '/'
+    | '/farmers'
+    | '/products'
+    | '/transactions'
+    | '/sandbox/transaction'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
-  ProductRoute: typeof ProductRoute
-  TransactionRoute: typeof TransactionRoute
+  FarmersRoute: typeof FarmersRoute
+  ProductsRoute: typeof ProductsRoute
+  TransactionsRoute: typeof TransactionsRoute
+  SandboxTransactionRoute: typeof SandboxTransactionRoute
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
-    '/transaction': {
-      id: '/transaction'
-      path: '/transaction'
-      fullPath: '/transaction'
-      preLoaderRoute: typeof TransactionRouteImport
+    '/transactions': {
+      id: '/transactions'
+      path: '/transactions'
+      fullPath: '/transactions'
+      preLoaderRoute: typeof TransactionsRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/product': {
-      id: '/product'
-      path: '/product'
-      fullPath: '/product'
-      preLoaderRoute: typeof ProductRouteImport
+    '/products': {
+      id: '/products'
+      path: '/products'
+      fullPath: '/products'
+      preLoaderRoute: typeof ProductsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/farmers': {
+      id: '/farmers'
+      path: '/farmers'
+      fullPath: '/farmers'
+      preLoaderRoute: typeof FarmersRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/': {
@@ -82,13 +120,22 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/sandbox/transaction': {
+      id: '/sandbox/transaction'
+      path: '/sandbox/transaction'
+      fullPath: '/sandbox/transaction'
+      preLoaderRoute: typeof SandboxTransactionRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
-  ProductRoute: ProductRoute,
-  TransactionRoute: TransactionRoute,
+  FarmersRoute: FarmersRoute,
+  ProductsRoute: ProductsRoute,
+  TransactionsRoute: TransactionsRoute,
+  SandboxTransactionRoute: SandboxTransactionRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

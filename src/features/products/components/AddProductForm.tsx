@@ -1,16 +1,17 @@
 import { useForm } from "@tanstack/react-form";
 import { useState } from "react";
-import { formProductSchema, useAddProduct } from "@/utils/product";
-import { Button } from "../ui/button";
+import { formProductSchema } from "@/features/products/schemas";
+import { useAddProduct } from "@/features/products/hooks";
+import { Button } from "@/components/ui/button";
 import {
 	Card,
 	CardContent,
 	CardFooter,
 	CardHeader,
 	CardTitle,
-} from "../ui/card";
-import { Field, FieldError, FieldGroup, FieldLabel } from "../ui/field";
-import { Input } from "../ui/input";
+} from "@/components/ui/card";
+import { Field, FieldError, FieldGroup, FieldLabel } from "@/components/ui/field";
+import { Input } from "@/components/ui/input";
 import {
 	Select,
 	SelectContent,
@@ -18,8 +19,9 @@ import {
 	SelectItem,
 	SelectTrigger,
 	SelectValue,
-} from "../ui/select";
-import { Spinner } from "../ui/spinner";
+} from "@/components/ui/select";
+import { Spinner } from "@/components/ui/spinner";
+import { toast } from "sonner";
 
 const defaultSplitType = [
 	{ value: "percentage", label: "แบ่งส่วน แบบยาง" },
@@ -30,8 +32,10 @@ const formId = "add-product-form";
 
 export default function AddProductForm({
 	handleIsAddProductClick,
+	setIsAddProduct,
 }: {
 	handleIsAddProductClick: () => void;
+	setIsAddProduct: (isAddProduct: boolean) => void;
 }) {
 	const addProduct = useAddProduct();
 	const [isSubmitting, setIsSubmitting] = useState(false);
@@ -46,9 +50,16 @@ export default function AddProductForm({
 		},
 		onSubmit: async ({ value }) => {
 			setIsSubmitting(true);
-			addProduct.mutate({ data: value });
-			form.reset();
-			setIsSubmitting(false);
+			addProduct.mutate({ data: value }, {onSuccess: () => {
+				form.reset();
+				setIsSubmitting(false);
+				setIsAddProduct(false);
+			}, onError: () => {
+				setIsSubmitting(false);
+				console.log("error add product");
+				toast.error("เพิ่มสินค้าไม่สำเร็จ", );
+			}});
+			
 		},
 	});
 	return (

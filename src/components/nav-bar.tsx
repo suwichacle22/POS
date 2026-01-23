@@ -1,3 +1,4 @@
+import { IconPlus } from "@tabler/icons-react";
 import { Link } from "@tanstack/react-router";
 import {
 	NavigationMenu,
@@ -8,6 +9,9 @@ import {
 	NavigationMenuList,
 	NavigationMenuTrigger,
 } from "@/components/ui/navigation-menu";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Button } from "./ui/button";
+import { Separator } from "./ui/separator";
 
 export default function NavBar() {
 	const pages = [
@@ -17,23 +21,41 @@ export default function NavBar() {
 		},
 		{
 			Name: "สินค้า",
-			Link: "/product",
+			Link: "/products",
+		},
+		{
+			Name: "ลูกค้า",
+			Link: "/farmers",
 		},
 	];
 	return (
-		<NavigationMenu>
-			<NavigationMenuList>
-				{pages.map((page) => {
-					return (
-						<NavigationMenuItem key={page.Name}>
-							<NavigationMenuLink
-								key={page.Name}
-								render={<Link to={page.Link}>{page.Name}</Link>}
-							/>
-						</NavigationMenuItem>
-					);
-				})}
-			</NavigationMenuList>
-		</NavigationMenu>
+		<>
+			<div className="flex justify-between items-center mt-1 w-full">
+				<NavigationMenu>
+					<NavigationMenuList>
+						{pages.map((page) => {
+							return (
+								<NavigationMenuItem key={page.Name}>
+									<NavigationMenuLink
+										key={page.Name}
+										render={<Link to={page.Link}>{page.Name}</Link>}
+									/>
+								</NavigationMenuItem>
+							);
+						})}
+					</NavigationMenuList>
+				</NavigationMenu>
+				<div>
+					<Link to="/transactions" className="inline-flex items-center gap-2">
+						<Separator orientation="vertical" />
+						<Button variant="default" className="text-xl">
+							<IconPlus />
+							รายการซื้อ
+						</Button>
+					</Link>
+				</div>
+			</div>
+			<Separator className="" />
+		</>
 	);
 }

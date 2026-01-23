@@ -4,25 +4,22 @@ import { Button } from "@/components/ui/button";
 import { Field, FieldError, FieldGroup } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
 import { Spinner } from "@/components/ui/spinner";
-import {
-	fetchProductPriceById,
-	formProductPrice,
-	useAddProductPrice,
-} from "@/utils/product";
+import { fetchProductPriceById } from "@/features/products/api";
+import { useAddProductPrice } from "@/features/products/hooks";
+import { formProductPrice } from "@/features/products/schemas";
 
-export default function AddProductPriceForm({
+export default function ProductPriceForm({
 	productId,
 	setIsAddProductPrice,
 }: {
 	productId: string;
 	setIsAddProductPrice: (isAddProductPrice: boolean) => void;
 }) {
-	const addProductPrice = useAddProductPrice(productId);
+	const addProductPrice = useAddProductPrice();
 	const { data: productPriceData } = useQuery({
 		queryKey: ["product", productId],
 		queryFn: () => fetchProductPriceById({ data: { productId } }),
 	});
-	console.log(productPriceData);
 	const formId = "form-add-product-price";
 	const form = useForm({
 		defaultValues: {
@@ -35,6 +32,7 @@ export default function AddProductPriceForm({
 		onSubmit: async ({ value }) => {
 			console.log("product price", value);
 			addProductPrice.mutate({ data: value });
+			setIsAddProductPrice(false);
 		},
 	});
 	return (
@@ -43,7 +41,6 @@ export default function AddProductPriceForm({
 			onSubmit={(e) => {
 				e.preventDefault();
 				form.handleSubmit();
-				setIsAddProductPrice(false);
 			}}
 		>
 			<FieldGroup className="mt-2">

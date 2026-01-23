@@ -12,6 +12,10 @@ export const transactionStatusEnum = pgEnum("transaction_status", [
 	"pending",
 	"submitted",
 ]);
+export const paidTypeEnum = pgEnum("transaction_types", [
+	"cash",
+	"bank transfer",
+]);
 export const customerTypeEnum = pgEnum("customer_type", ["farmer", "employee"]);
 export const productSplitTypeEnum = pgEnum("product_split_type_enum", [
 	"percentage",
@@ -19,7 +23,7 @@ export const productSplitTypeEnum = pgEnum("product_split_type_enum", [
 ]);
 
 export const farmers = pgTable("farmers", {
-	farmerId: uuid("farmer_id").primaryKey().defaultRandom(),
+	farmerId: uuid("farmer_id").primaryKey().notNull().defaultRandom(),
 	displayName: text("display_name").notNull().unique(),
 	phone: text("phone"),
 	createdAt: timestamp("created_at").defaultNow(),
@@ -110,9 +114,7 @@ export const transactionLines = pgTable("transaction_lines", {
 	transactionGroupId: uuid("transaction_group_id")
 		.notNull()
 		.references(() => transactionGroups.transactionGroupId),
-	employeeId: uuid("employee_id")
-		.notNull()
-		.references(() => employees.employeeId),
+	employeeId: uuid("employee_id").references(() => employees.employeeId),
 	productId: uuid("product_id").references(() => products.productId),
 	weightVehicleIn: numeric("weight_vehicle_in", {
 		precision: 10,
@@ -139,6 +141,10 @@ export const transactionLines = pgTable("transaction_lines", {
 		precision: 3,
 		scale: 2,
 	}),
+	farmerPaidType: paidTypeEnum("farmer_paid_type").notNull().default("cash"),
+	employeePaidType: paidTypeEnum("employee_paid_type")
+		.notNull()
+		.default("cash"),
 	harvestRate: numeric("harvest_rate", {
 		precision: 3,
 		scale: 2,

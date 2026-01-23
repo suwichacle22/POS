@@ -1,0 +1,11 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(npm run dev:*)",
+      "Bash(npm run build:*)",
+      "WebSearch",
+      "mcp__tanstack__search_docs",
+      "mcp__tanstack__doc"
+    ]
+  }
+}

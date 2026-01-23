@@ -4,20 +4,23 @@ import {
 	AlertDialogAction,
 	AlertDialogCancel,
 	AlertDialogContent,
-	AlertDialogDescription,
 	AlertDialogFooter,
 	AlertDialogHeader,
 	AlertDialogTitle,
-	AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
-import { useDeleteProduct } from "@/utils/product";
-import { Spinner } from "../ui/spinner";
+import { useDeleteProduct } from "@/features/products/hooks";
+import { Spinner } from "@/components/ui/spinner";
 
-export default function DeleteProductDialog({
+export default function RemoveProductDialog({
 	isDelete,
 	setIsDelete,
 	productId,
 	productName,
+}: {
+	isDelete: boolean;
+	setIsDelete: (v: boolean) => void;
+	productId: string;
+	productName: string;
 }) {
 	const [isLoading, setIsLoading] = useState(false);
 	const deleteFn = useDeleteProduct();

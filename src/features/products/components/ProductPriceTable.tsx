@@ -13,7 +13,7 @@ export default function ProductPriceTable({
 			<div className="flex gap-2">
 				<span className="flex gap-2">วันที่</span>
 				{productPrices.map((productPrice) => (
-					<span key={productPrice.productPriceId} className="w-16 text-center">
+					<span key={productPrice.productPriceId} className="w-14 text-center">
 						{productPrice.createdAt?.getDate()}
 					</span>
 				))}
@@ -21,7 +21,7 @@ export default function ProductPriceTable({
 			<div className="flex gap-2">
 				<span className="font-medium">ราคา</span>
 				{productPrices.map((productPrice) => (
-					<span key={productPrice.productPriceId} className="w-16 text-center">
+					<span key={productPrice.productPriceId} className="w-14 text-center">
 						{productPrice.price}
 					</span>
 				))}
