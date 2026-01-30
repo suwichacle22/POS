@@ -1,4 +1,5 @@
 import { useState } from "react";
+import RemoveDialog from "@/components/RemoveDialog";
 import { Button } from "@/components/ui/button";
 import {
 	Card,
@@ -8,7 +9,8 @@ import {
 	CardHeader,
 	CardTitle,
 } from "@/components/ui/card";
-import { useEmployees } from "../../hooks";
+import { Separator } from "@/components/ui/separator";
+import { useDeleteFarmer, useEmployees } from "../../hooks";
 import { type FarmerSchema } from "../../schemas";
 import AddEmployeeForm from "../employees/AddEmployeeForm";
 import EmployeeCard from "../employees/EmployeeCard";
@@ -24,6 +26,7 @@ export default function FarmerCard({
 	const { data: employeesData = [] } = useEmployees({
 		farmerId: farmerData.farmerId,
 	});
+	const deleteFarmerFn = useDeleteFarmer();
 	return (
 		<Card>
 			<CardHeader>
@@ -42,15 +45,20 @@ export default function FarmerCard({
 			</CardHeader>
 			<CardContent>
 				{isAddEmployee ? (
-					<AddEmployeeForm
-						isAddEmployee={isAddEmployee}
-						setIsAddEmployee={setIsAddEmployee}
-						farmerId={farmerData.farmerId}
-					/>
+					<>
+						<AddEmployeeForm
+							isAddEmployee={isAddEmployee}
+							setIsAddEmployee={setIsAddEmployee}
+							farmerId={farmerData.farmerId}
+						/>
+						<Separator className="my-4" />
+					</>
 				) : null}
 				{employeesData.map((employee) => {
 					return (
-						<EmployeeCard key={employee.employeeId} employeeData={employee} />
+						<div key={employee.employeeId} className="flex flex-col m-2 gap-4">
+							<EmployeeCard key={employee.employeeId} employeeData={employee} />
+						</div>
 					);
 				})}
 			</CardContent>
@@ -59,11 +67,12 @@ export default function FarmerCard({
 					ลบลูกค้า
 				</Button>
 				{isDelete ? (
-					<RemoveFarmerDialog
+					<RemoveDialog
 						isDelete={isDelete}
 						setIsDelete={setIsDelete}
-						farmerId={farmerData.farmerId}
-						farmerName={farmerData.displayName}
+						itemId={farmerData.farmerId}
+						itemName={farmerData.displayName}
+						mutationDeleteFn={deleteFarmerFn}
 					/>
 				) : null}
 			</CardFooter>

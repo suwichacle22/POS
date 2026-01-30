@@ -1,7 +1,7 @@
 import { createRouter, Link } from "@tanstack/react-router";
 import { setupRouterSsrQueryIntegration } from "@tanstack/react-router-ssr-query";
+import { Spinner } from "./components/ui/spinner";
 import * as TanstackQuery from "./integrations/tanstack-query/root-provider";
-
 // Import the generated route tree
 import { routeTree } from "./routeTree.gen";
 
@@ -16,6 +16,11 @@ export const getRouter = () => {
 		},
 
 		defaultPreload: "intent",
+		defaultPendingComponent: () => {
+			<div className="flex items-center gap-6">
+				<Spinner className="size-8" />
+			</div>;
+		},
 		defaultNotFoundComponent: () => {
 			return (
 				<div>

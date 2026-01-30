@@ -1,4 +1,5 @@
 import { useState } from "react";
+import RemoveDialog from "@/components/RemoveDialog";
 import { Button } from "@/components/ui/button";
 import {
 	Card,
@@ -10,9 +11,9 @@ import {
 } from "@/components/ui/card";
 import type { ProductWithPrices } from "@/features/products/types";
 import { transformDateThai } from "@/utils/date";
+import { useDeleteProduct } from "../hooks";
 import ProductPriceForm from "./ProductPriceForm";
 import ProductPriceTable from "./ProductPriceTable";
-import RemoveProductDialog from "./RemoveProductDialog";
 
 export default function ProductCard({ item }: { item: ProductWithPrices }) {
 	const [isDelete, setIsDelete] = useState(false);
@@ -23,15 +24,16 @@ export default function ProductCard({ item }: { item: ProductWithPrices }) {
 	const handleAddProductPrice = () => {
 		setIsAddProductPrice((c) => !c);
 	};
+	const deleteFn = useDeleteProduct();
 
 	return (
-		<Card className="w-100">
+		<Card className="w-[330px]">
 			<CardHeader>
 				<CardTitle className="text-2xl font-bold">{item.productName}</CardTitle>
 				<p className="font-bold text-xl">
 					ราคาล่าสุด {item?.productPrices?.[0]?.price ?? "0.00"}
 				</p>
-				<CardDescription>{`สร้างเมื่อ ${transformDateThai(item.createdAt as Date)}`}</CardDescription>
+				<CardDescription>แบ่งแบบ {item.defaultSplitType}</CardDescription>
 			</CardHeader>
 			<CardContent>
 				<Button variant="secondary" onClick={handleAddProductPrice}>
@@ -52,11 +54,12 @@ export default function ProductCard({ item }: { item: ProductWithPrices }) {
 					ลบ
 				</Button>
 				{isDelete ? (
-					<RemoveProductDialog
+					<RemoveDialog
 						isDelete={isDelete}
 						setIsDelete={setIsDelete}
-						productId={item.productId}
-						productName={item.productName}
+						itemId={item.productId}
+						itemName={item.productName}
+						mutationDeleteFn={deleteFn}
 					/>
 				) : null}
 			</CardFooter>

@@ -14,6 +14,20 @@ export const formEmployeeSchema = z.object({
 	farmerId: z.string(),
 });
 
+export const formEmployeeSplitProductSchema = z.object({
+	employeeId: z.string(),
+	productId: z.string(),
+	splitType: z.enum(["percentage", "per_kg"]),
+	farmerSplitRatio: z.coerce
+		.number()
+		.gt(0, "โปรดใส่ส่วนของเถ้าแก่ให้ถูกต้อง")
+		.nullable(),
+	employeeSplitRatio: z.string().nullable(),
+	harvestRate: z.string().nullable(),
+	transportationFee: z.string().nullable(),
+	promotionTo: z.enum(["farmer", "employee"]),
+});
+
 export type EmployeeSchemaTable = typeof employees.$inferSelect;
 
 export interface EmployeeSplitProductSchemaTable {
@@ -34,5 +48,5 @@ export interface EmployeeSplitProductSchemaTable {
 		harvestRate?: string;
 		promotionTo?: "farmer" | "employee";
 		transportationFee?: string;
-	};
+	}[];
 }

@@ -1,16 +1,22 @@
 import { useForm } from "@tanstack/react-form";
 import { useState } from "react";
-import { formProductSchema } from "@/features/products/schemas";
-import { useAddProduct } from "@/features/products/hooks";
+import { toast } from "sonner";
+import { useAppForm } from "@/components/form/formContext";
 import { Button } from "@/components/ui/button";
 import {
 	Card,
 	CardContent,
+	CardDescription,
 	CardFooter,
 	CardHeader,
 	CardTitle,
 } from "@/components/ui/card";
-import { Field, FieldError, FieldGroup, FieldLabel } from "@/components/ui/field";
+import {
+	Field,
+	FieldError,
+	FieldGroup,
+	FieldLabel,
+} from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
 import {
 	Select,
@@ -21,12 +27,9 @@ import {
 	SelectValue,
 } from "@/components/ui/select";
 import { Spinner } from "@/components/ui/spinner";
-import { toast } from "sonner";
-
-const defaultSplitType = [
-	{ value: "percentage", label: "แบ่งส่วน แบบยาง" },
-	{ value: "per_kg", label: "ค่าตัด แบบปาล์ม" },
-];
+import { useAddProduct } from "@/features/products/hooks";
+import { formProductSchema } from "@/features/products/schemas";
+import { productDefaultType } from "@/utils/selectDefault";
 
 const formId = "add-product-form";
 
@@ -38,9 +41,8 @@ export default function AddProductForm({
 	setIsAddProduct: (isAddProduct: boolean) => void;
 }) {
 	const addProduct = useAddProduct();
-	const [isSubmitting, setIsSubmitting] = useState(false);
 
-	const form = useForm({
+	const form = useAppForm({
 		defaultValues: {
 			productName: "",
 			defaultSplitType: "percentage",
@@ -49,108 +51,72 @@ export default function AddProductForm({
 			onSubmit: formProductSchema,
 		},
 		onSubmit: async ({ value }) => {
-			setIsSubmitting(true);
-			addProduct.mutate({ data: value }, {onSuccess: () => {
-				form.reset();
-				setIsSubmitting(false);
-				setIsAddProduct(false);
-			}, onError: () => {
-				setIsSubmitting(false);
-				console.log("error add product");
-				toast.error("เพิ่มสินค้าไม่สำเร็จ", );
-			}});
-			
+			const result = formProductSchema.parse(value);
+			await addProduct.mutateAsync(
+				{ data: result },
+				{
+					onSuccess: () => {
+						form.reset();
+						setIsAddProduct(false);
+					},
+					onError: () => {
+						toast.error("เพิ่มสินค้าไม่สำเร็จ");
+					},
+				},
+			);
 		},
 	});
 	return (
 		<Card className="w-80">
-			<CardHeader>
-				<CardTitle>แบบฟอร์มเพิ่มสินค้า</CardTitle>
-			</CardHeader>
-			<CardContent>
-				<form
-					id={formId}
-					onSubmit={(e) => {
-						e.preventDefault();
-						form.handleSubmit();
-					}}
-				>
+			<form
+				id={formId}
+				onSubmit={(e) => {
+					e.preventDefault();
+					form.handleSubmit();
+				}}
+			>
+				<CardHeader>
+					<CardTitle>แบบฟอร์มเพิ่มสินค้า</CardTitle>
+					<CardDescription></CardDescription>
+				</CardHeader>
+
+				<CardContent>
 					<FieldGroup>
-						<form.Field
+						<form.AppField
 							name="productName"
-							children={(field) => {
-								const isInvalid =
-									field.state.meta.isTouched && !field.state.meta.isValid;
-								return (
-									<Field data-invalid={isInvalid}>
-										<FieldLabel>เพิ่มสินค้า</FieldLabel>
-										<Input
-											id={field.name}
-											name={field.name}
-											value={field.state.value}
-											onChange={(e) => field.handleChange(e.target.value)}
-											autoComplete="off"
-											aria-invalid={isInvalid}
-											placeholder="ชื่อสินค้า ตัวอย่าง ยางแผ่น, ปาล์ม..."
-										/>
-										{isInvalid && (
-											<FieldError errors={field.state.meta.errors} />
-										)}
-									</Field>
-								);
-							}}
+							children={(field) => (
+								<field.TextField
+									label="เพิ่มสินค้า"
+									placeholder="ชื่อสินค้า ตัวอย่าง ยางแผ่น, ปาล์ม..."
+								/>
+							)}
 						/>
-						<form.Field
+						<form.AppField
 							name="defaultSplitType"
-							children={(field) => {
-								const isInvalid =
-									field.state.meta.isTouched && !field.state.meta.isValid;
-								return (
-									<Field orientation="responsive" data-invalid={isInvalid}>
-										<FieldLabel>ประเภทการแบ่ง</FieldLabel>
-										<Select
-											name={field.name}
-											value={field.state.value}
-											items={defaultSplitType}
-											onValueChange={(e) => field.handleChange(e as string)}
-										>
-											<SelectTrigger
-												aria-invalid={isInvalid}
-												className="min-w-30"
-											>
-												<SelectValue />
-											</SelectTrigger>
-											<SelectContent>
-												<SelectGroup>
-													{defaultSplitType.map((item) => (
-														<SelectItem key={item.value} value={item.value}>
-															{item.label}
-														</SelectItem>
-													))}
-												</SelectGroup>
-											</SelectContent>
-										</Select>
-									</Field>
-								);
-							}}
+							children={(field) => (
+								<field.SelectField
+									label="ประเภทแบ่งส่วนสินค้า"
+									items={productDefaultType}
+								/>
+							)}
 						/>
 					</FieldGroup>
-				</form>
-			</CardContent>
-			<CardFooter>
-				<Field orientation="horizontal" className="flex justify-end">
-					<Button
-						type="button"
-						variant="ghost"
-						onClick={handleIsAddProductClick}
-					>
-						ยกเลิก
-					</Button>
-					<Button type="submit" form={formId} disabled={isSubmitting}>
-						{isSubmitting ? <Spinner /> : null} ยืนยัน
-					</Button>
-				</Field>
-			</CardFooter>
+				</CardContent>
+				<CardFooter>
+					<Field orientation="horizontal" className="flex mt-4 justify-end">
+						<Button
+							type="button"
+							variant="ghost"
+							onClick={handleIsAddProductClick}
+						>
+							ยกเลิก
+						</Button>
+						<form.AppForm>
+							<form.SubmitButton />
+						</form.AppForm>
+					</Field>
+				</CardFooter>
+			</form>
 		</Card>
 	);
 }

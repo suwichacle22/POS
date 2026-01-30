@@ -36,7 +36,7 @@ The goal is to make the developer better at web development, not to do the work 
 ### Tech Stack
 
 - **Framework:** TanStack Start (monorepo)
-- **Backend:** Elysia
+- **Backend:** tanstack start
 - **Database:** Drizzle ORM
 - **UI Components:** shadcn
 - **Frontend:** React
@@ -46,6 +46,10 @@ The goal is to make the developer better at web development, not to do the work 
 ---
 
 ## Data Model
+## enum
+percentage -> split employee and farmer
+per-kg -> split like plam harvest rate
+
 
 ### farmer
 
@@ -310,64 +314,6 @@ product (1) ──→ (many) transaction_line
 ```
 
 ---
-
-## Build Plan
-
-### Phase 1: Farmer + Employee
-
-- [ ] Create farmer table schema (Drizzle)
-- [ ] Create employee table schema (Drizzle)
-- [ ] API: create farmer (auto-create "own" employee)
-- [ ] API: list farmers
-- [ ] API: create employee
-- [ ] API: list employees by farmer
-- [ ] UI: farmer dropdown with inline add
-- [ ] UI: employee dropdown with inline add
-- [ ] Test: create farmer → verify "own" employee created
-
-### Phase 2: Product + Product Price
-
-- [ ] Create product table schema
-- [ ] Create product_price table schema
-- [ ] Seed initial products (ยางแผ่น, น้ำยาง, ยางถ้วย, ปาล์ม)
-- [ ] API: list products
-- [ ] API: set price (create new record)
-- [ ] API: get latest price per product
-- [ ] UI: set prices screen
-- [ ] Test: set price → verify latest price returned
-
-### Phase 3: Split Defaults
-
-- [ ] Create split_defaults table schema
-- [ ] API: get defaults for employee-product
-- [ ] API: create/update defaults
-- [ ] UI: employee settings screen
-- [ ] Test: create default → verify auto-fill works
-
-### Phase 4: Transaction Group + Line
-
-- [ ] Create transaction_group table schema
-- [ ] Create transaction_line table schema
-- [ ] API: create group
-- [ ] API: add line to group
-- [ ] API: update line
-- [ ] API: delete line
-- [ ] API: submit group (change status to "submitted")
-- [ ] API: list pending groups
-- [ ] API: get group with lines
-- [ ] UI: transaction screen
-- [ ] UI: pending transactions screen
-- [ ] Logic: auto-save split_defaults on first transaction
-- [ ] Logic: calculate summaries (farmer total, each employee total)
-- [ ] Test: full transaction flow
-
-### Phase 5: Invoice
-
-- [ ] UI: invoice preview modal
-- [ ] UI: farmer invoice view
-- [ ] UI: employee invoice view
-- [ ] Print functionality
-
 ### Future (v2)
 
 - Factory sales table
@@ -541,42 +487,6 @@ Think about: form state management, optimistic updates, error recovery
 
 ---
 
-## File Structure (Suggested)
-
-```
-pos-app/
-├── app/
-│   ├── routes/
-│   │   ├── index.tsx          # Transaction screen
-│   │   ├── pending.tsx        # Pending transactions
-│   │   ├── prices.tsx         # Set prices
-│   │   └── settings.tsx       # Employee settings
-│   ├── components/
-│   │   ├── farmer-select.tsx
-│   │   ├── employee-select.tsx
-│   │   ├── product-entry.tsx
-│   │   ├── transaction-line.tsx
-│   │   ├── summary-card.tsx
-│   │   └── invoice-modal.tsx
-│   └── lib/
-│       ├── api.ts             # API client functions
-│       └── calculations.ts    # Split/total calculations
-├── server/
-│   ├── db/
-│   │   ├── schema.ts          # Drizzle schema
-│   │   └── index.ts           # DB connection
-│   └── api/
-│       ├── farmer.ts
-│       ├── employee.ts
-│       ├── product.ts
-│       ├── price.ts
-│       ├── split-defaults.ts
-│       └── transaction.ts
-└── drizzle/
-    └── migrations/
-```
-
----
 
 ## Resources for Learning
 
@@ -584,7 +494,6 @@ When stuck, consider looking into:
 
 - **TanStack Start docs** — routing, server functions
 - **Drizzle ORM docs** — schema, queries, relations
-- **Elysia docs** — API routes, validation
 - **shadcn/ui** — component patterns
 - **React Hook Form or TanStack Form** — form state management
 
@@ -597,3 +506,26 @@ The developer wants to **learn**, not just **ship**.
 Every question is an opportunity to deepen understanding.
 
 Guide them to discover answers, don't hand them solutions.
+
+
+# How to connect Printer of my family business
+
+```
+import { printer as ThermalPrinter, types as PrinterTypes, characterSet } from "node-thermal-printer"
+let printer = new ThermalPrinter({
+        type: PrinterTypes.EPSON,
+        interface: 'tcp://192.168.1.181',
+
+    })
+
+    try {
+            let execute = await printer.execute()
+            responseDBJson(res, 200, {result:"print done"})
+        } catch (e){
+            responseErrorJson(res, 200, "print fail")
+        }
+```
+
+before implement anything about receipt printer read from doc node-thermal-printer-doc.md
+
+192.168.1.181 this is ip of my printer

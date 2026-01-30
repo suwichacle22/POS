@@ -17,6 +17,9 @@ export const paidTypeEnum = pgEnum("transaction_types", [
 	"bank transfer",
 ]);
 export const customerTypeEnum = pgEnum("customer_type", ["farmer", "employee"]);
+
+//percentage for latex and rubber (0.6 farmer and 0.4 employee)
+//per_kg for palm (0.6 from weight(kg))
 export const productSplitTypeEnum = pgEnum("product_split_type_enum", [
 	"percentage",
 	"per_kg",
@@ -132,7 +135,7 @@ export const transactionLines = pgTable("transaction_lines", {
 		precision: 10,
 		scale: 2,
 	}).notNull(),
-	splitType: productSplitTypeEnum("split_type").notNull().default("percentage"),
+	splitType: productSplitTypeEnum("split_type"),
 	farmerRatio: numeric("farmer_ratio", {
 		precision: 3,
 		scale: 2,
@@ -158,9 +161,8 @@ export const transactionLines = pgTable("transaction_lines", {
 		precision: 3,
 		scale: 2,
 	}),
-	promotionTo: customerTypeEnum("promotion_to").default("employee"),
+	promotionTo: customerTypeEnum("promotion_to"),
 	createdAt: timestamp("created_at").defaultNow(),
-	submittedAt: timestamp("submitted_at"),
 	updatedAt: timestamp("updated_at")
 		.defaultNow()
 		.$onUpdate(() => new Date()),

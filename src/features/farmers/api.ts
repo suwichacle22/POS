@@ -20,9 +20,9 @@ export const addFarmerDB = createServerFn({ method: "POST" })
 	});
 
 export const deleteFarmerDB = createServerFn({ method: "POST" })
-	.inputValidator(z.object({ farmerId: z.string() }))
-	.handler(async ({ data: { farmerId } }) => {
-		await db.delete(farmers).where(eq(farmers.farmerId, farmerId));
+	.inputValidator(z.object({ id: z.string() }))
+	.handler(async ({ data: { id } }) => {
+		await db.delete(farmers).where(eq(farmers.farmerId, id));
 	});
 
 //employee section
@@ -50,7 +50,32 @@ export const addEmployeeDB = createServerFn({ method: "POST" })
 	});
 
 export const deleteEmployeeDB = createServerFn({ method: "POST" })
+	.inputValidator(z.object({ id: z.string() }))
+	.handler(async ({ data: { id } }) => {
+		await db.delete(employees).where(eq(employees.employeeId, id));
+	});
+
+export const addEmployeeSplitProductDB = createServerFn({ method: "POST" })
+	.inputValidator(
+		z.object({
+			employeeId: z.string(),
+			productId: z.string(),
+			splitType: z.enum(["percentage", "per_kg"]),
+			farmerSplitRatio: z.string().optional(),
+			employeeSplitRatio: z.string().optional(),
+			harvestRate: z.string().optional(),
+			promotionTo: z.enum(["farmer", "employee"]).optional(),
+			transportationFee: z.string().optional(),
+		}),
+	)
+	.handler(async ({ data }) => {
+		return await db.insert(splitDefaults).values(data).returning();
+	});
+
+export const fetchEmployeeSplitProduct = createServerFn({ method: "POST" })
 	.inputValidator(z.object({ employeeId: z.string() }))
 	.handler(async ({ data: { employeeId } }) => {
-		await db.delete(employees).where(eq(employees.employeeId, employeeId));
+		return await db.query.splitDefaults.findMany({
+			where: { employeeId: employeeId },
+		});
 	});

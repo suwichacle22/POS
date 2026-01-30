@@ -1,7 +1,9 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import {
 	addEmployeeDB,
+	addEmployeeSplitProductDB,
 	addFarmerDB,
+	deleteEmployeeDB,
 	deleteFarmerDB,
 	fetchEmployee,
 	fetchFarmer,
@@ -47,6 +49,26 @@ export const useAddEmployee = () => {
 	const queryClient = useQueryClient();
 	return useMutation({
 		mutationFn: addEmployeeDB,
+		onSuccess: () => {
+			queryClient.invalidateQueries({ queryKey: ["employee"] });
+		},
+	});
+};
+
+export const useAddEmployeeSplitProduct = () => {
+	const queryClient = useQueryClient();
+	return useMutation({
+		mutationFn: addEmployeeSplitProductDB,
+		onSuccess: () => {
+			queryClient.invalidateQueries({ queryKey: ["employee"] });
+		},
+	});
+};
+
+export const useDeleteEmployee = () => {
+	const queryClient = useQueryClient();
+	return useMutation({
+		mutationFn: deleteEmployeeDB,
 		onSuccess: () => {
 			queryClient.invalidateQueries({ queryKey: ["employee"] });
 		},

@@ -1,7 +1,10 @@
 import z from "zod";
 
 export const formProductSchema = z.object({
-	productName: z.string().min(1, "โปรดใส่ชื่อ"),
+	productName: z
+		.string()
+		.min(1, "โปรดใส่ชื่อ")
+		.transform((val) => val.trim()),
 	defaultSplitType: z.enum(["percentage", "per_kg"]),
 });
 

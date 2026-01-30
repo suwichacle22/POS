@@ -1,3 +1,4 @@
+import { formOptions } from "@tanstack/react-form";
 import z from "zod";
 
 // Transaction form/validation schemas — extend when building the form
@@ -44,3 +45,34 @@ export const transactionGroupFormSchema = z.object({
 //     promotionRate?: string | ... 1 more ... | undefined;
 //     promotionTo?: "farmer" | ... 2 more ... | undefined;
 // }
+
+export const transactionFormOpts = formOptions({
+	defaultValues: {
+		transactionGroup: {
+			transactionGroupId: "",
+			farmerId: "",
+			groupName: "",
+			status: "pending",
+		},
+		transactionLine: {
+			transactionId: "",
+			employeeId: "",
+			productId: "",
+			weightVehicleIn: "",
+			weightVehicleOut: "",
+			weight: "",
+			price: "",
+			splitType: "",
+			farmerRatio: "",
+			employeeRatio: "",
+			harvestRate: "",
+			transportationFee: "",
+			carLicense: "",
+			promotionRate: "",
+			promotionTo: "employee",
+			createdAt: new Date(),
+			submittedAt: null,
+			updatedAt: new Date(),
+		},
+	},
+});

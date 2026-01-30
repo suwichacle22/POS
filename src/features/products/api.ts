@@ -5,7 +5,22 @@ import { db } from "@/db";
 import { productPrices, products } from "@/db/schema";
 import { formProductPrice, formProductSchema } from "./schemas";
 
+export const fetchProductForm = createServerFn({ method: "GET" }).handler(
+	async () => {
+		return await db
+			.select({ value: products.productId, label: products.productName })
+			.from(products)
+			.orderBy(products.createdAt);
+	},
+);
+
 export const fetchProduct = createServerFn({ method: "GET" }).handler(
+	async () => {
+		return await db.query.products.findMany();
+	},
+);
+
+export const fetchProductWithPrice = createServerFn({ method: "GET" }).handler(
 	async () => {
 		return await db.query.products.findMany({
 			with: { productPrices: { orderBy: { createdAt: "desc" }, limit: 5 } },
@@ -36,7 +51,7 @@ export const addProductPriceDB = createServerFn({ method: "POST" })
 	});
 
 export const deleteProductDB = createServerFn({ method: "POST" })
-	.inputValidator(z.object({ productId: z.string() }))
-	.handler(async ({ data: { productId } }) => {
-		await db.delete(products).where(eq(products.productId, productId));
+	.inputValidator(z.object({ id: z.string() }))
+	.handler(async ({ data: { id } }) => {
+		await db.delete(products).where(eq(products.productId, id));
 	});

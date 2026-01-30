@@ -1,7 +1,13 @@
 import { useForm } from "@tanstack/react-form";
 import { useQuery } from "@tanstack/react-query";
+import { useAppForm } from "@/components/form/formContext";
 import { Button } from "@/components/ui/button";
-import { Field, FieldError, FieldGroup } from "@/components/ui/field";
+import {
+	Field,
+	FieldError,
+	FieldGroup,
+	FieldLabel,
+} from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
 import { Spinner } from "@/components/ui/spinner";
 import { fetchProductPriceById } from "@/features/products/api";
@@ -21,7 +27,7 @@ export default function ProductPriceForm({
 		queryFn: () => fetchProductPriceById({ data: { productId } }),
 	});
 	const formId = "form-add-product-price";
-	const form = useForm({
+	const form = useAppForm({
 		defaultValues: {
 			productId: productId,
 			price: productPriceData?.[0]?.price ?? "0.00",
@@ -30,8 +36,7 @@ export default function ProductPriceForm({
 			onSubmit: formProductPrice,
 		},
 		onSubmit: async ({ value }) => {
-			console.log("product price", value);
-			addProductPrice.mutate({ data: value });
+			await addProductPrice.mutateAsync({ data: value });
 			setIsAddProductPrice(false);
 		},
 	});
@@ -44,31 +49,13 @@ export default function ProductPriceForm({
 			}}
 		>
 			<FieldGroup className="mt-2">
-				<form.Field
+				<form.AppField
 					name="price"
-					children={(field) => {
-						const isInvalid =
-							field.state.meta.isTouched && !field.state.meta.isValid;
-						return (
-							<Field data-invalid={isInvalid} orientation="horizontal">
-								<Input
-									id={field.name}
-									name={field.name}
-									value={field.state.value}
-									onChange={(e) => field.handleChange(e.target.value)}
-									autoComplete="off"
-									inputMode="decimal"
-									aria-invalid={isInvalid}
-								/>
-								{isInvalid && <FieldError errors={field.state.meta.errors} />}
-
-								<Button type="submit" disabled={addProductPrice.isPending}>
-									{addProductPrice.isPending ? <Spinner /> : null} ยืนยัน
-								</Button>
-							</Field>
-						);
-					}}
+					children={(field) => <field.NumericField label="ราคาสินค้า" />}
 				/>
+				<form.AppForm>
+					<form.SubmitButton />
+				</form.AppForm>
 			</FieldGroup>
 		</form>
 	);

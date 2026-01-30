@@ -1,17 +1,22 @@
 import { createFileRoute } from "@tanstack/react-router";
-import TransactionFormMainCard from "@/features/transactions/components/TransactionCard";
-import TransactionForm from "@/features/transactions/components/TransactionForm";
+import { Spinner } from "@/components/ui/spinner";
+import TransactionFormMainCard from "@/features/transactions/components/TransactionMainForm";
 
 export const Route = createFileRoute("/transactions")({
 	component: RouteComponent,
+	pendingComponent: () => {
+		return (
+			<div className="flex items-center gap-6 justify-center h-screen">
+				<Spinner className="size-8" />
+			</div>
+		);
+	},
 });
 
 function RouteComponent() {
 	return (
-		<div className="flex justify-center items-center">
-			<div className="flex gap-4 p-4 justify-center items-center w-full">
-				<TransactionFormMainCard />
-			</div>
+		<div className="">
+			<TransactionFormMainCard />
 		</div>
-	)
+	);
 }
